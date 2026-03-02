@@ -1,0 +1,180 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\Employee;
+use App\Models\Tenant;
+
+class EmployeeSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $tenant = Tenant::first();
+        if (!$tenant) return;
+
+        $employees = [
+            [
+                'tenant_id'       => $tenant->id,
+                'first_name'      => 'Rahul',
+                'last_name'       => 'Sharma',
+                'email'           => 'rahul.sharma@techflowsolutions.in',
+                'phone'           => '+91-9845012345',
+                'department'      => 'Engineering',
+                'position'        => 'Senior Software Engineer',
+                'employment_type' => 'full_time',
+                'status'          => 'active',
+                'salary'          => 1350000,
+                'hire_date'       => '2020-03-15',
+                'date_of_birth'   => '1993-07-22',
+                'gender'          => 'male',
+                'address'         => '45, 3rd Cross, Indiranagar, Bengaluru – 560038',
+                'bank_account'    => 'SBIN0001234 | 38901234567',
+                'tax_id'          => 'CDXPS8901K',
+                'manager'         => null,
+            ],
+            [
+                'tenant_id'       => $tenant->id,
+                'first_name'      => 'Priya',
+                'last_name'       => 'Nair',
+                'email'           => 'priya.nair@techflowsolutions.in',
+                'phone'           => '+91-9876543210',
+                'department'      => 'Engineering',
+                'position'        => 'Software Engineer',
+                'employment_type' => 'full_time',
+                'status'          => 'active',
+                'salary'          => 420000,
+                'hire_date'       => '2024-01-15',
+                'date_of_birth'   => '2001-04-10',
+                'gender'          => 'female',
+                'address'         => 'Flat 301, Skylark Apartments, Wakad, Pune – 411057',
+                'bank_account'    => 'HDFC0002345 | 50100234567',
+                'tax_id'          => 'BQNPN4567R',
+                'manager'         => null,
+            ],
+            [
+                'tenant_id'       => $tenant->id,
+                'first_name'      => 'Vikram',
+                'last_name'       => 'Reddy',
+                'email'           => 'vikram.reddy@techflowsolutions.in',
+                'phone'           => '+91-9700123456',
+                'department'      => 'Engineering',
+                'position'        => 'Engineering Manager',
+                'employment_type' => 'full_time',
+                'status'          => 'active',
+                'salary'          => 2800000,
+                'hire_date'       => '2019-07-01',
+                'date_of_birth'   => '1985-11-30',
+                'gender'          => 'male',
+                'address'         => 'H.No 8-2-293, Road No 78, Jubilee Hills, Hyderabad – 500033',
+                'bank_account'    => 'ICIC0003456 | 00421234567',
+                'tax_id'          => 'AFRPR1234M',
+                'manager'         => null,
+            ],
+            [
+                'tenant_id'       => $tenant->id,
+                'first_name'      => 'Sneha',
+                'last_name'       => 'Kulkarni',
+                'email'           => 'sneha.kulkarni@techflowsolutions.in',
+                'phone'           => '+91-9823456789',
+                'department'      => 'Human Resources',
+                'position'        => 'HR Executive',
+                'employment_type' => 'full_time',
+                'status'          => 'active',
+                'salary'          => 650000,
+                'hire_date'       => '2023-06-01',
+                'date_of_birth'   => '1997-02-14',
+                'gender'          => 'female',
+                'address'         => '202, Sea View CHS, Andheri East, Mumbai – 400069',
+                'bank_account'    => 'AXIS0004567 | 91201234567',
+                'tax_id'          => 'GHTSK6789P',
+                'manager'         => null,
+            ],
+            [
+                'tenant_id'       => $tenant->id,
+                'first_name'      => 'Arjun',
+                'last_name'       => 'Mehta',
+                'email'           => 'arjun.mehta@techflowsolutions.in',
+                'phone'           => '+91-9512345678',
+                'department'      => 'Finance',
+                'position'        => 'Finance Analyst',
+                'employment_type' => 'full_time',
+                'status'          => 'active',
+                'salary'          => 950000,
+                'hire_date'       => '2022-08-10',
+                'date_of_birth'   => '1994-09-05',
+                'gender'          => 'male',
+                'address'         => '14, T.T.K. Road, Alwarpet, Chennai – 600018',
+                'bank_account'    => 'KOTAK0005678 | 2312345678',
+                'tax_id'          => 'CXQAM3456N',
+                'manager'         => null,
+            ],
+            [
+                'tenant_id'       => $tenant->id,
+                'first_name'      => 'Kavya',
+                'last_name'       => 'Iyer',
+                'email'           => 'kavya.iyer@techflowsolutions.in',
+                'phone'           => '+91-9345678901',
+                'department'      => 'Operations',
+                'position'        => 'Operations Intern',
+                'employment_type' => 'intern',
+                'status'          => 'active',
+                'salary'          => 240000,
+                'hire_date'       => '2024-06-01',
+                'date_of_birth'   => '2002-12-20',
+                'gender'          => 'female',
+                'address'         => 'Room 404, Landmark Hostel, Koramangala, Bengaluru – 560034',
+                'bank_account'    => 'SBIN0006789 | 35601234567',
+                'tax_id'          => null,
+                'manager'         => null,
+            ],
+            [
+                'tenant_id'       => $tenant->id,
+                'first_name'      => 'Rohan',
+                'last_name'       => 'Desai',
+                'email'           => 'rohan.desai@techflowsolutions.in',
+                'phone'           => '+91-9234567890',
+                'department'      => 'Engineering',
+                'position'        => 'DevOps Engineer',
+                'employment_type' => 'full_time',
+                'status'          => 'active',
+                'salary'          => 1800000,
+                'hire_date'       => '2021-11-01',
+                'date_of_birth'   => '1990-06-18',
+                'gender'          => 'male',
+                'address'         => '7, Bharat Colony, Santacruz West, Mumbai – 400054',
+                'bank_account'    => 'HDFC0007890 | 50100987654',
+                'tax_id'          => 'BMPRD7890Q',
+                'manager'         => null,
+            ],
+            [
+                'tenant_id'       => $tenant->id,
+                'first_name'      => 'Pooja',
+                'last_name'       => 'Singh',
+                'email'           => 'pooja.singh@techflowsolutions.in',
+                'phone'           => '+91-9123456789',
+                'department'      => 'Marketing',
+                'position'        => 'Digital Marketing Executive',
+                'employment_type' => 'full_time',
+                'status'          => 'active',
+                'salary'          => 700000,
+                'hire_date'       => '2023-03-20',
+                'date_of_birth'   => '1996-03-08',
+                'gender'          => 'female',
+                'address'         => 'C-45, Sector 21, Dwarka, New Delhi – 110075',
+                'bank_account'    => 'PNB0008901 | 4567890123',
+                'tax_id'          => 'DKXPS1234L',
+                'manager'         => null,
+            ],
+        ];
+
+        foreach ($employees as $data) {
+            Employee::firstOrCreate(
+                ['email' => $data['email']],
+                $data
+            );
+        }
+
+        $this->command->info('✅ 8 Indian employees seeded (Bengaluru, Mumbai, Pune, Hyderabad, Chennai, Delhi).');
+    }
+}
