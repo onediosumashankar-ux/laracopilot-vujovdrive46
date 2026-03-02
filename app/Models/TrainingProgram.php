@@ -14,11 +14,21 @@ class TrainingProgram extends Model
 
     protected $casts = [
         'start_date' => 'date',
-        'end_date' => 'date',
+        'end_date'   => 'date',
     ];
 
     public function enrollments()
     {
         return $this->hasMany(TrainingEnrollment::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(TrainingSchedule::class);
+    }
+
+    public function openSchedules()
+    {
+        return $this->hasMany(TrainingSchedule::class)->where('status', 'open');
     }
 }
