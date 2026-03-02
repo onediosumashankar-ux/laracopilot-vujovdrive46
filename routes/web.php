@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\RecruitmentController;
 use App\Http\Controllers\Admin\OnboardingController;
 use App\Http\Controllers\Admin\PerformanceController;
 use App\Http\Controllers\Admin\PayrollController;
+use App\Http\Controllers\Admin\TdsController;
 use App\Http\Controllers\Admin\BenefitsController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\LeaveController;
@@ -75,7 +76,7 @@ Route::get('/admin/performance/{id}/edit', [PerformanceController::class, 'edit'
 Route::put('/admin/performance/{id}', [PerformanceController::class, 'update'])->name('admin.performance.update');
 Route::delete('/admin/performance/{id}', [PerformanceController::class, 'destroy'])->name('admin.performance.destroy');
 
-// ── Payroll (enhanced) ────────────────────────────────────────────────────
+// Payroll
 Route::get('/admin/payroll', [PayrollController::class, 'index'])->name('admin.payroll.index');
 Route::get('/admin/payroll/create', [PayrollController::class, 'create'])->name('admin.payroll.create');
 Route::post('/admin/payroll/preview', [PayrollController::class, 'preview'])->name('admin.payroll.preview');
@@ -85,10 +86,20 @@ Route::get('/admin/payroll/{id}', [PayrollController::class, 'show'])->name('adm
 Route::post('/admin/payroll/{id}/process', [PayrollController::class, 'process'])->name('admin.payroll.process');
 Route::get('/admin/payroll/{id}/payslip', [PayrollController::class, 'payslip'])->name('admin.payroll.payslip');
 Route::delete('/admin/payroll/{id}', [PayrollController::class, 'destroy'])->name('admin.payroll.destroy');
-// Holiday Calendar
 Route::get('/admin/payroll/holidays/list', [PayrollController::class, 'holidays'])->name('admin.payroll.holidays');
 Route::post('/admin/payroll/holidays', [PayrollController::class, 'storeHoliday'])->name('admin.payroll.holidays.store');
 Route::delete('/admin/payroll/holidays/{id}', [PayrollController::class, 'destroyHoliday'])->name('admin.payroll.holidays.destroy');
+
+// ── TDS Management ────────────────────────────────────────────────────────
+Route::get('/admin/tds', [TdsController::class, 'index'])->name('admin.tds.index');
+Route::get('/admin/tds/calculator', [TdsController::class, 'calculator'])->name('admin.tds.calculator');
+Route::post('/admin/tds/calculate', [TdsController::class, 'calculate'])->name('admin.tds.calculate');
+Route::get('/admin/tds/report', [TdsController::class, 'report'])->name('admin.tds.report');
+Route::get('/admin/tds/deductions', [TdsController::class, 'deductions'])->name('admin.tds.deductions');
+Route::put('/admin/tds/deductions/{id}', [TdsController::class, 'updateDeduction'])->name('admin.tds.deductions.update');
+Route::get('/admin/tds/declare/{employeeId}', [TdsController::class, 'declare'])->name('admin.tds.declare');
+Route::post('/admin/tds/declare/{employeeId}', [TdsController::class, 'saveDeclare'])->name('admin.tds.declare.save');
+Route::get('/admin/tds/certificate/{employeeId}', [TdsController::class, 'certificate'])->name('admin.tds.certificate');
 
 // Benefits
 Route::get('/admin/benefits', [BenefitsController::class, 'index'])->name('admin.benefits.index');

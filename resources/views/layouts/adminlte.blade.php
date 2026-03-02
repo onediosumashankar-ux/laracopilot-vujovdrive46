@@ -23,33 +23,24 @@
     .badge { border-radius: 6px; }
     .btn { border-radius: 6px; }
     .main-header { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .sidebar-mini.sidebar-collapse .main-sidebar:hover { width: 250px; }
     .nav-header { color: #6b8caa; font-size: 0.7rem; letter-spacing: 1px; padding: 0.5rem 1rem; }
   </style>
   @stack('styles')
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
-
-  <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-      </li>
+      <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a></li>
       <li class="nav-item d-none d-sm-inline-block">
         <span class="nav-link text-muted"><i class="fas fa-building mr-1"></i>{{ session('hrms_tenant_name', 'TalentFlow HRMS') }}</span>
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <span class="nav-link"><i class="far fa-clock mr-1"></i><span id="clock"></span></span>
-      </li>
+      <li class="nav-item"><span class="nav-link"><i class="far fa-clock mr-1"></i><span id="clock"></span></span></li>
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <div class="d-inline-block" style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2d6a9f,#1a3a5c);display:inline-flex!important;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600">
-            {{ strtoupper(substr(session('hrms_user_name', 'U'), 0, 1)) }}
-          </div>
+          <div class="d-inline-block" style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2d6a9f,#1a3a5c);display:inline-flex!important;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600">{{ strtoupper(substr(session('hrms_user_name', 'U'), 0, 1)) }}</div>
         </a>
         <div class="dropdown-menu dropdown-menu-right">
           <div class="dropdown-header"><strong>{{ session('hrms_user_name') }}</strong><br><small class="text-muted">{{ ucfirst(session('hrms_role')) }}</small></div>
@@ -66,8 +57,6 @@
       </li>
     </ul>
   </nav>
-
-  <!-- Sidebar -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="#" class="brand-link text-center py-3">
       <i class="fas fa-users-cog fa-lg mr-2" style="color:#4db8ff"></i>
@@ -75,9 +64,7 @@
     </a>
     <div class="sidebar">
       <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center" style="border-bottom:1px solid rgba(255,255,255,0.1)">
-        <div class="image" style="width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,#2d6a9f,#4db8ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:14px;flex-shrink:0">
-          {{ strtoupper(substr(session('hrms_user_name', 'U'), 0, 1)) }}
-        </div>
+        <div class="image" style="width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,#2d6a9f,#4db8ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:14px;flex-shrink:0">{{ strtoupper(substr(session('hrms_user_name', 'U'), 0, 1)) }}</div>
         <div class="info ml-2">
           <a href="#" class="d-block" style="color:#fff;font-size:0.85rem;font-weight:600">{{ session('hrms_user_name') }}</a>
           <small style="color:#6b8caa">{{ ucfirst(session('hrms_role')) }}</small>
@@ -85,172 +72,67 @@
       </div>
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-
           @if(in_array(session('hrms_role'), ['superadmin']))
           <li class="nav-header">SUPER ADMIN</li>
-          <li class="nav-item">
-            <a href="{{ route('superadmin.dashboard') }}" class="nav-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('superadmin.tenants.index') }}" class="nav-link {{ request()->routeIs('superadmin.tenants.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-building"></i><p>Tenants</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="{{ route('superadmin.dashboard') }}" class="nav-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}"><i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p></a></li>
+          <li class="nav-item"><a href="{{ route('superadmin.tenants.index') }}" class="nav-link {{ request()->routeIs('superadmin.tenants.*') ? 'active' : '' }}"><i class="nav-icon fas fa-building"></i><p>Tenants</p></a></li>
           @endif
-
           @if(in_array(session('hrms_role'), ['admin', 'hr']))
           <li class="nav-header">MAIN MENU</li>
-          <li class="nav-item">
-            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('admin.employees.index') }}" class="nav-link {{ request()->routeIs('admin.employees.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-users"></i><p>Employees</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p></a></li>
+          <li class="nav-item"><a href="{{ route('admin.employees.index') }}" class="nav-link {{ request()->routeIs('admin.employees.*') ? 'active' : '' }}"><i class="nav-icon fas fa-users"></i><p>Employees</p></a></li>
           <li class="nav-header">RECRUITMENT</li>
-          <li class="nav-item">
-            <a href="{{ route('admin.recruitment.index') }}" class="nav-link {{ request()->routeIs('admin.recruitment.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-briefcase"></i><p>Jobs & ATS</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('admin.onboarding.index') }}" class="nav-link {{ request()->routeIs('admin.onboarding.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-user-plus"></i><p>Onboarding</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="{{ route('admin.recruitment.index') }}" class="nav-link {{ request()->routeIs('admin.recruitment.*') ? 'active' : '' }}"><i class="nav-icon fas fa-briefcase"></i><p>Jobs & ATS</p></a></li>
+          <li class="nav-item"><a href="{{ route('admin.onboarding.index') }}" class="nav-link {{ request()->routeIs('admin.onboarding.*') ? 'active' : '' }}"><i class="nav-icon fas fa-user-plus"></i><p>Onboarding</p></a></li>
           <li class="nav-header">WORKFORCE</li>
-          <li class="nav-item">
-            <a href="{{ route('admin.attendance.index') }}" class="nav-link {{ request()->routeIs('admin.attendance.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-clock"></i><p>Attendance</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('admin.leaves.index') }}" class="nav-link {{ request()->routeIs('admin.leaves.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-calendar-minus"></i><p>Leave Management</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('admin.performance.index') }}" class="nav-link {{ request()->routeIs('admin.performance.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-chart-line"></i><p>Performance</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="{{ route('admin.attendance.index') }}" class="nav-link {{ request()->routeIs('admin.attendance.*') ? 'active' : '' }}"><i class="nav-icon fas fa-clock"></i><p>Attendance</p></a></li>
+          <li class="nav-item"><a href="{{ route('admin.leaves.index') }}" class="nav-link {{ request()->routeIs('admin.leaves.*') ? 'active' : '' }}"><i class="nav-icon fas fa-calendar-minus"></i><p>Leave Management</p></a></li>
+          <li class="nav-item"><a href="{{ route('admin.performance.index') }}" class="nav-link {{ request()->routeIs('admin.performance.*') ? 'active' : '' }}"><i class="nav-icon fas fa-chart-line"></i><p>Performance</p></a></li>
           <li class="nav-header">COMPENSATION</li>
-          <li class="nav-item">
-            <a href="{{ route('admin.payroll.index') }}" class="nav-link {{ request()->routeIs('admin.payroll.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-money-bill-wave"></i><p>Payroll</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('admin.benefits.index') }}" class="nav-link {{ request()->routeIs('admin.benefits.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-heartbeat"></i><p>Benefits</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="{{ route('admin.payroll.index') }}" class="nav-link {{ request()->routeIs('admin.payroll.*') ? 'active' : '' }}"><i class="nav-icon fas fa-money-bill-wave"></i><p>Payroll</p></a></li>
+          <li class="nav-item"><a href="{{ route('admin.tds.index') }}" class="nav-link {{ request()->routeIs('admin.tds.*') ? 'active' : '' }}"><i class="nav-icon fas fa-file-invoice"></i><p>TDS Management</p></a></li>
+          <li class="nav-item"><a href="{{ route('admin.benefits.index') }}" class="nav-link {{ request()->routeIs('admin.benefits.*') ? 'active' : '' }}"><i class="nav-icon fas fa-heartbeat"></i><p>Benefits</p></a></li>
           <li class="nav-header">DEVELOPMENT</li>
-          <li class="nav-item">
-            <a href="{{ route('admin.learning.index') }}" class="nav-link {{ request()->routeIs('admin.learning.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-graduation-cap"></i><p>Learning & Dev</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('admin.wellness.index') }}" class="nav-link {{ request()->routeIs('admin.wellness.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-smile"></i><p>Wellness</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="{{ route('admin.learning.index') }}" class="nav-link {{ request()->routeIs('admin.learning.*') ? 'active' : '' }}"><i class="nav-icon fas fa-graduation-cap"></i><p>Learning & Dev</p></a></li>
+          <li class="nav-item"><a href="{{ route('admin.wellness.index') }}" class="nav-link {{ request()->routeIs('admin.wellness.*') ? 'active' : '' }}"><i class="nav-icon fas fa-smile"></i><p>Wellness</p></a></li>
           <li class="nav-header">INSIGHTS</li>
-          <li class="nav-item">
-            <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-chart-bar"></i><p>HR Analytics</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}"><i class="nav-icon fas fa-chart-bar"></i><p>HR Analytics</p></a></li>
           @endif
-
           @if(session('hrms_role') === 'employee')
           <li class="nav-header">MY WORKSPACE</li>
-          <li class="nav-item">
-            <a href="{{ route('employee.dashboard') }}" class="nav-link {{ request()->routeIs('employee.dashboard') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-home"></i><p>My Dashboard</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('employee.profile') }}" class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-user"></i><p>My Profile</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('employee.attendance.index') }}" class="nav-link {{ request()->routeIs('employee.attendance.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-clock"></i><p>Attendance</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('employee.leaves.index') }}" class="nav-link {{ request()->routeIs('employee.leaves.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-calendar-check"></i><p>My Leaves</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('employee.payslips') }}" class="nav-link {{ request()->routeIs('employee.payslips*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-file-invoice-dollar"></i><p>Payslips</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('employee.learning') }}" class="nav-link {{ request()->routeIs('employee.learning*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-book"></i><p>Learning</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ route('employee.wellness') }}" class="nav-link {{ request()->routeIs('employee.wellness*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-heart"></i><p>Wellness</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="{{ route('employee.dashboard') }}" class="nav-link {{ request()->routeIs('employee.dashboard') ? 'active' : '' }}"><i class="nav-icon fas fa-home"></i><p>My Dashboard</p></a></li>
+          <li class="nav-item"><a href="{{ route('employee.profile') }}" class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}"><i class="nav-icon fas fa-user"></i><p>My Profile</p></a></li>
+          <li class="nav-item"><a href="{{ route('employee.attendance.index') }}" class="nav-link {{ request()->routeIs('employee.attendance.*') ? 'active' : '' }}"><i class="nav-icon fas fa-clock"></i><p>Attendance</p></a></li>
+          <li class="nav-item"><a href="{{ route('employee.leaves.index') }}" class="nav-link {{ request()->routeIs('employee.leaves.*') ? 'active' : '' }}"><i class="nav-icon fas fa-calendar-check"></i><p>My Leaves</p></a></li>
+          <li class="nav-item"><a href="{{ route('employee.payslips') }}" class="nav-link {{ request()->routeIs('employee.payslips*') ? 'active' : '' }}"><i class="nav-icon fas fa-file-invoice-dollar"></i><p>Payslips</p></a></li>
+          <li class="nav-item"><a href="{{ route('employee.learning') }}" class="nav-link {{ request()->routeIs('employee.learning*') ? 'active' : '' }}"><i class="nav-icon fas fa-book"></i><p>Learning</p></a></li>
+          <li class="nav-item"><a href="{{ route('employee.wellness') }}" class="nav-link {{ request()->routeIs('employee.wellness*') ? 'active' : '' }}"><i class="nav-icon fas fa-heart"></i><p>Wellness</p></a></li>
           @endif
-
         </ul>
       </nav>
     </div>
   </aside>
-
-  <!-- Content -->
   <div class="content-wrapper">
     <div class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0" style="font-size:1.4rem;font-weight:700;color:#1a2942">@yield('page-title', 'Dashboard')</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">@yield('breadcrumb', 'Dashboard')</li>
-            </ol>
-          </div>
+          <div class="col-sm-6"><h1 class="m-0" style="font-size:1.4rem;font-weight:700;color:#1a2942">@yield('page-title', 'Dashboard')</h1></div>
+          <div class="col-sm-6"><ol class="breadcrumb float-sm-right"><li class="breadcrumb-item"><a href="#">Home</a></li><li class="breadcrumb-item active">@yield('breadcrumb', 'Dashboard')</li></ol></div>
         </div>
       </div>
     </div>
     <div class="content">
       <div class="container-fluid">
         @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show">
-          <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
-          <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-        </div>
+        <div class="alert alert-success alert-dismissible fade show"><i class="fas fa-check-circle mr-2"></i>{{ session('success') }}<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button></div>
         @endif
         @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show">
-          <i class="fas fa-exclamation-triangle mr-2"></i>
-          @foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach
-          <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-        </div>
+        <div class="alert alert-danger alert-dismissible fade show"><i class="fas fa-exclamation-triangle mr-2"></i>@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button></div>
         @endif
         @yield('content')
       </div>
     </div>
   </div>
-
-  <!-- Footer -->
   <footer class="main-footer">
     <strong>&copy; {{ date('Y') }} <a href="#">TalentFlow HRMS</a>.</strong> All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
@@ -258,16 +140,12 @@
     </div>
   </footer>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
 <script>
-function updateClock() {
-  const now = new Date();
-  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
-}
-updateClock(); setInterval(updateClock, 1000);
+function updateClock(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+updateClock();setInterval(updateClock,1000);
 </script>
 @stack('scripts')
 </body>
