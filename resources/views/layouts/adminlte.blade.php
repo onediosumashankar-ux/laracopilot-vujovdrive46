@@ -9,20 +9,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
   <style>
     .brand-link{background:linear-gradient(135deg,#1a3a5c 0%,#2d6a9f 100%)}
-    .main-sidebar{background:#1a2942}
-    .nav-sidebar .nav-item .nav-link{color:#a8b5c8}
+    .main-sidebar{background:#1a2942}.nav-sidebar .nav-item .nav-link{color:#a8b5c8}
     .nav-sidebar .nav-item .nav-link:hover,.nav-sidebar .nav-item .nav-link.active{color:#fff;background:rgba(45,106,159,.4)}
     .nav-sidebar .nav-item .nav-link i{color:#6b8caa}
     .nav-sidebar .nav-item .nav-link.active i,.nav-sidebar .nav-item .nav-link:hover i{color:#4db8ff}
     .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active{background:linear-gradient(90deg,#2d6a9f,#1a3a5c);color:#fff}
-    .content-wrapper{background:#f0f4f8}
-    .card{border:none;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-    .card-header{border-radius:10px 10px 0 0!important}
-    .info-box{border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-    .nav-pills .nav-link.active{background:linear-gradient(135deg,#1a3a5c,#2d6a9f)}
-    .badge{border-radius:6px}.btn{border-radius:6px}
-    .main-header{box-shadow:0 2px 8px rgba(0,0,0,.1)}
-    .nav-header{color:#6b8caa;font-size:.7rem;letter-spacing:1px;padding:.5rem 1rem}
+    .content-wrapper{background:#f0f4f8}.card{border:none;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+    .card-header{border-radius:10px 10px 0 0!important}.info-box{border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+    .nav-pills .nav-link.active{background:linear-gradient(135deg,#1a3a5c,#2d6a9f)}.badge{border-radius:6px}.btn{border-radius:6px}
+    .main-header{box-shadow:0 2px 8px rgba(0,0,0,.1)}.nav-header{color:#6b8caa;font-size:.7rem;letter-spacing:1px;padding:.5rem 1rem}
   </style>
   @stack('styles')
 </head>
@@ -67,6 +62,8 @@
           <li class="nav-header">MAIN MENU</li>
           <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active':'' }}"><i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p></a></li>
           <li class="nav-item"><a href="{{ route('admin.employees.index') }}" class="nav-link {{ request()->routeIs('admin.employees.*') ? 'active':'' }}"><i class="nav-icon fas fa-users"></i><p>Employees</p></a></li>
+          <li class="nav-header">ORGANIZATION</li>
+          <li class="nav-item"><a href="{{ route('admin.branches.index') }}" class="nav-link {{ request()->routeIs('admin.branches.*') ? 'active':'' }}"><i class="nav-icon fas fa-code-branch"></i><p>Branches</p></a></li>
           <li class="nav-header">RECRUITMENT</li>
           <li class="nav-item"><a href="{{ route('admin.recruitment.index') }}" class="nav-link {{ request()->routeIs('admin.recruitment.*') ? 'active':'' }}"><i class="nav-icon fas fa-briefcase"></i><p>Jobs & ATS</p></a></li>
           <li class="nav-item"><a href="{{ route('admin.onboarding.index') }}" class="nav-link {{ request()->routeIs('admin.onboarding.*') ? 'active':'' }}"><i class="nav-icon fas fa-user-plus"></i><p>Onboarding</p></a></li>
@@ -109,10 +106,7 @@
       @yield('content')
     </div></div>
   </div>
-  <footer class="main-footer">
-    <strong>&copy; {{ date('Y') }} <a href="#">TalentFlow HRMS</a>.</strong> All rights reserved.
-    <div class="float-right d-none d-sm-inline-block"><b>Version</b> 1.0.0 &nbsp;|&nbsp; Made with <i class="fas fa-heart text-danger"></i> by <a href="https://laracopilot.com/" target="_blank">LaraCopilot</a></div>
-  </footer>
+  <footer class="main-footer"><strong>&copy; {{ date('Y') }} <a href="#">TalentFlow HRMS</a>.</strong> All rights reserved.<div class="float-right d-none d-sm-inline-block"><b>Version</b> 1.0.0 &nbsp;|&nbsp; Made with <i class="fas fa-heart text-danger"></i> by <a href="https://laracopilot.com/" target="_blank">LaraCopilot</a></div></footer>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>

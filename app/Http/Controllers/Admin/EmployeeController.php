@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
-use App\Models\User;
-use App\Models\Tenant;
+use App\Models\Branch;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
@@ -23,60 +21,69 @@ class EmployeeController extends Controller
     {
         if ($redirect = $this->authCheck()) return $redirect;
         $tenantId = session('hrms_tenant_id');
-        $employees = Employee::where('tenant_id', $tenantId)
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-        return view('admin.employees.index', compact('employees'));
+
+        $branchFilter = request('branch_id');
+        $deptFilter   = request('department');
+        $statusFilter = request('status', 'active');
+
+        $query = Employee::with('branch')
+            ->where('tenant_id', $tenantId);
+
+        if ($branchFilter) $query->where('branch_id', $branchFilter);
+        if ($deptFilter)   $query->where('department', $deptFilter);
+        if ($statusFilter) $query->where('status', $statusFilter);
+
+        $employees  = $query->orderBy('first_name')->paginate(15)->withQueryString();
+        $branches   = Branch::where('tenant_id', $tenantId)->where('is_active', true)->orderBy('name')->get();
+        $departments = Employee::where('tenant_id', $tenantId)->distinct()->pluck('department');
+
+        return view('admin.employees.index', compact('employees', 'branches', 'departments', 'branchFilter', 'deptFilter', 'statusFilter'));
     }
 
     public function create()
     {
         if ($redirect = $this->authCheck()) return $redirect;
-        return view('admin.employees.create');
+        $branches = Branch::where('tenant_id', session('hrms_tenant_id'))
+            ->where('is_active', true)
+            ->orderByDesc('is_head_office')
+            ->orderBy('name')
+            ->get();
+        return view('admin.employees.create', compact('branches'));
     }
 
     public function store(Request $request)
     {
         if ($redirect = $this->authCheck()) return $redirect;
-        $tenantId = session('hrms_tenant_id');
         $validated = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'email' => 'required|email|unique:employees,email',
-            'phone' => 'nullable|string|max:20',
-            'department' => 'required|string|max:100',
-            'position' => 'required|string|max:100',
+            'branch_id'       => 'required|exists:branches,id',
+            'first_name'      => 'required|string|max:100',
+            'last_name'       => 'required|string|max:100',
+            'email'           => 'required|email|unique:employees,email',
+            'phone'           => 'nullable|string|max:20',
+            'department'      => 'required|string|max:100',
+            'position'        => 'required|string|max:150',
             'employment_type' => 'required|in:full_time,part_time,contract,intern',
-            'hire_date' => 'required|date',
-            'salary' => 'required|numeric|min:0',
-            'status' => 'required|in:active,inactive,terminated',
-            'gender' => 'required|in:male,female,other',
-            'date_of_birth' => 'nullable|date',
-            'address' => 'nullable|string',
-            'emergency_contact' => 'nullable|string|max:255',
-            'bank_account' => 'nullable|string|max:50',
-            'tax_id' => 'nullable|string|max:50',
-            'password' => 'required|min:8',
+            'status'          => 'required|in:active,inactive,terminated',
+            'salary'          => 'required|numeric|min:0',
+            'hire_date'       => 'required|date',
+            'date_of_birth'   => 'nullable|date',
+            'gender'          => 'nullable|in:male,female,other',
+            'address'         => 'nullable|string|max:500',
+            'bank_account'    => 'nullable|string|max:100',
+            'tax_id'          => 'nullable|string|max:20',
+            'manager'         => 'nullable|string|max:150',
         ]);
 
-        $employee = Employee::create(array_merge($validated, ['tenant_id' => $tenantId]));
-
-        User::create([
-            'name' => $validated['first_name'] . ' ' . $validated['last_name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'employee',
-            'tenant_id' => $tenantId,
-            'employee_id' => $employee->id,
-        ]);
-
-        return redirect()->route('admin.employees.index')->with('success', 'Employee created successfully.');
+        Employee::create(array_merge($validated, ['tenant_id' => session('hrms_tenant_id')]));
+        return redirect()->route('admin.employees.index')->with('success', 'Employee added successfully.');
     }
 
     public function show($id)
     {
         if ($redirect = $this->authCheck()) return $redirect;
-        $employee = Employee::where('tenant_id', session('hrms_tenant_id'))->findOrFail($id);
+        $employee = Employee::with(['branch', 'currentSalaryStructure.salaryStructure', 'currentSalaryStructure.breakdowns'])
+            ->where('tenant_id', session('hrms_tenant_id'))
+            ->findOrFail($id);
         return view('admin.employees.show', compact('employee'));
     }
 
@@ -84,32 +91,40 @@ class EmployeeController extends Controller
     {
         if ($redirect = $this->authCheck()) return $redirect;
         $employee = Employee::where('tenant_id', session('hrms_tenant_id'))->findOrFail($id);
-        return view('admin.employees.edit', compact('employee'));
+        $branches = Branch::where('tenant_id', session('hrms_tenant_id'))
+            ->where('is_active', true)
+            ->orderByDesc('is_head_office')
+            ->orderBy('name')
+            ->get();
+        return view('admin.employees.edit', compact('employee', 'branches'));
     }
 
     public function update(Request $request, $id)
     {
         if ($redirect = $this->authCheck()) return $redirect;
-        $employee = Employee::where('tenant_id', session('hrms_tenant_id'))->findOrFail($id);
+        $employee  = Employee::where('tenant_id', session('hrms_tenant_id'))->findOrFail($id);
         $validated = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'phone' => 'nullable|string|max:20',
-            'department' => 'required|string|max:100',
-            'position' => 'required|string|max:100',
+            'branch_id'       => 'required|exists:branches,id',
+            'first_name'      => 'required|string|max:100',
+            'last_name'       => 'required|string|max:100',
+            'email'           => 'required|email|unique:employees,email,' . $id,
+            'phone'           => 'nullable|string|max:20',
+            'department'      => 'required|string|max:100',
+            'position'        => 'required|string|max:150',
             'employment_type' => 'required|in:full_time,part_time,contract,intern',
-            'hire_date' => 'required|date',
-            'salary' => 'required|numeric|min:0',
-            'status' => 'required|in:active,inactive,terminated',
-            'gender' => 'required|in:male,female,other',
-            'date_of_birth' => 'nullable|date',
-            'address' => 'nullable|string',
-            'emergency_contact' => 'nullable|string|max:255',
-            'bank_account' => 'nullable|string|max:50',
-            'tax_id' => 'nullable|string|max:50',
+            'status'          => 'required|in:active,inactive,terminated',
+            'salary'          => 'required|numeric|min:0',
+            'hire_date'       => 'required|date',
+            'date_of_birth'   => 'nullable|date',
+            'gender'          => 'nullable|in:male,female,other',
+            'address'         => 'nullable|string|max:500',
+            'bank_account'    => 'nullable|string|max:100',
+            'tax_id'          => 'nullable|string|max:20',
+            'manager'         => 'nullable|string|max:150',
         ]);
+
         $employee->update($validated);
-        return redirect()->route('admin.employees.index')->with('success', 'Employee updated successfully.');
+        return redirect()->route('admin.employees.show', $id)->with('success', 'Employee updated.');
     }
 
     public function destroy($id)

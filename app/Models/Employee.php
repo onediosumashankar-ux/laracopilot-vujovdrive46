@@ -7,21 +7,32 @@ use Illuminate\Database\Eloquent\Model;
 class Employee extends Model
 {
     protected $fillable = [
-        'tenant_id', 'first_name', 'last_name', 'email', 'phone',
-        'department', 'position', 'employment_type', 'hire_date',
-        'salary', 'status', 'gender', 'date_of_birth', 'address',
-        'emergency_contact', 'bank_account', 'tax_id', 'avatar',
+        'tenant_id', 'branch_id', 'first_name', 'last_name',
+        'email', 'phone', 'department', 'position',
+        'employment_type', 'status', 'salary',
+        'hire_date', 'date_of_birth', 'gender',
+        'address', 'bank_account', 'tax_id', 'manager',
     ];
 
     protected $casts = [
-        'hire_date' => 'date',
+        'hire_date'     => 'date',
         'date_of_birth' => 'date',
-        'salary' => 'decimal:2',
+        'salary'        => 'decimal:2',
     ];
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
 
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function attendances()
@@ -49,8 +60,13 @@ class Employee extends Model
         return $this->hasMany(TrainingEnrollment::class);
     }
 
-    public function getFullNameAttribute()
+    public function salaryStructures()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return $this->hasMany(EmployeeSalaryStructure::class);
+    }
+
+    public function currentSalaryStructure()
+    {
+        return $this->hasOne(EmployeeSalaryStructure::class)->where('is_current', true)->latest();
     }
 }

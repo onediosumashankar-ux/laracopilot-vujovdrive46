@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\RecruitmentController;
 use App\Http\Controllers\Admin\OnboardingController;
@@ -39,6 +40,18 @@ Route::delete('/superadmin/tenants/{id}', [TenantController::class, 'destroy'])-
 
 // Admin
 Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
+
+// ── Branch Management ─────────────────────────────────────────────────────
+Route::get('/admin/branches', [BranchController::class, 'index'])->name('admin.branches.index');
+Route::get('/admin/branches/create', [BranchController::class, 'create'])->name('admin.branches.create');
+Route::post('/admin/branches', [BranchController::class, 'store'])->name('admin.branches.store');
+Route::get('/admin/branches/{id}', [BranchController::class, 'show'])->name('admin.branches.show');
+Route::get('/admin/branches/{id}/edit', [BranchController::class, 'edit'])->name('admin.branches.edit');
+Route::put('/admin/branches/{id}', [BranchController::class, 'update'])->name('admin.branches.update');
+Route::delete('/admin/branches/{id}', [BranchController::class, 'destroy'])->name('admin.branches.destroy');
+Route::post('/admin/branches/{id}/reassign', [BranchController::class, 'reassign'])->name('admin.branches.reassign');
+
+// Employees
 Route::get('/admin/employees', [EmployeeController::class, 'index'])->name('admin.employees.index');
 Route::get('/admin/employees/create', [EmployeeController::class, 'create'])->name('admin.employees.create');
 Route::post('/admin/employees', [EmployeeController::class, 'store'])->name('admin.employees.store');
@@ -99,7 +112,7 @@ Route::get('/admin/tds/declare/{employeeId}', [TdsController::class, 'declare'])
 Route::post('/admin/tds/declare/{employeeId}', [TdsController::class, 'saveDeclare'])->name('admin.tds.declare.save');
 Route::get('/admin/tds/certificate/{employeeId}', [TdsController::class, 'certificate'])->name('admin.tds.certificate');
 
-// ── Salary Structure ──────────────────────────────────────────────────────
+// Salary Structures
 Route::get('/admin/salary', [SalaryStructureController::class, 'index'])->name('admin.salary.index');
 Route::get('/admin/salary/create', [SalaryStructureController::class, 'create'])->name('admin.salary.create');
 Route::post('/admin/salary', [SalaryStructureController::class, 'store'])->name('admin.salary.store');
@@ -107,16 +120,13 @@ Route::get('/admin/salary/{id}', [SalaryStructureController::class, 'show'])->na
 Route::get('/admin/salary/{id}/edit', [SalaryStructureController::class, 'edit'])->name('admin.salary.edit');
 Route::put('/admin/salary/{id}', [SalaryStructureController::class, 'update'])->name('admin.salary.update');
 Route::delete('/admin/salary/{id}', [SalaryStructureController::class, 'destroy'])->name('admin.salary.destroy');
-// Components
 Route::post('/admin/salary/{structureId}/components', [SalaryStructureController::class, 'storeComponent'])->name('admin.salary.components.store');
 Route::put('/admin/salary/{structureId}/components/{componentId}', [SalaryStructureController::class, 'updateComponent'])->name('admin.salary.components.update');
 Route::delete('/admin/salary/{structureId}/components/{componentId}', [SalaryStructureController::class, 'destroyComponent'])->name('admin.salary.components.destroy');
-// Assignment
 Route::get('/admin/salary-assign', [SalaryStructureController::class, 'assignIndex'])->name('admin.salary.assign');
 Route::post('/admin/salary-assign/preview', [SalaryStructureController::class, 'previewAssignment'])->name('admin.salary.assign.preview');
 Route::post('/admin/salary-assign', [SalaryStructureController::class, 'assign'])->name('admin.salary.assign.save');
 Route::get('/admin/salary-assign/{assignmentId}/breakdown', [SalaryStructureController::class, 'viewBreakdown'])->name('admin.salary.breakdown');
-// Offer Letters
 Route::get('/admin/salary/offers/list', [SalaryStructureController::class, 'offerLetters'])->name('admin.salary.offers');
 Route::get('/admin/salary/offers/create', [SalaryStructureController::class, 'createOffer'])->name('admin.salary.offer.create');
 Route::post('/admin/salary/offers/preview', [SalaryStructureController::class, 'previewOffer'])->name('admin.salary.offer.preview');
@@ -173,7 +183,7 @@ Route::get('/admin/wellness/surveys/create', [WellnessController::class, 'create
 Route::post('/admin/wellness/surveys', [WellnessController::class, 'storeSurvey'])->name('admin.wellness.surveys.store');
 Route::get('/admin/wellness/surveys/{id}', [WellnessController::class, 'showSurvey'])->name('admin.wellness.surveys.show');
 
-// Employee
+// Employee Self-Service
 Route::get('/employee/dashboard', [EmployeeSelfServiceController::class, 'dashboard'])->name('employee.dashboard');
 Route::get('/employee/profile', [EmployeeSelfServiceController::class, 'profile'])->name('employee.profile');
 Route::put('/employee/profile', [EmployeeSelfServiceController::class, 'updateProfile'])->name('employee.profile.update');
