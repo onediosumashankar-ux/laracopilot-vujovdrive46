@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\OnboardingController;
 use App\Http\Controllers\Admin\PerformanceController;
 use App\Http\Controllers\Admin\PayrollController;
 use App\Http\Controllers\Admin\TdsController;
+use App\Http\Controllers\Admin\SalaryStructureController;
 use App\Http\Controllers\Admin\BenefitsController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\LeaveController;
@@ -23,8 +24,6 @@ use App\Http\Controllers\Employee\EmployeePayrollController;
 use App\Http\Controllers\Employee\EmployeeLearningController;
 
 Route::get('/', function () { return redirect()->route('login'); });
-
-// Auth
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -38,10 +37,8 @@ Route::get('/superadmin/tenants/{id}/edit', [TenantController::class, 'edit'])->
 Route::put('/superadmin/tenants/{id}', [TenantController::class, 'update'])->name('superadmin.tenants.update');
 Route::delete('/superadmin/tenants/{id}', [TenantController::class, 'destroy'])->name('superadmin.tenants.destroy');
 
-// Admin Dashboard
+// Admin
 Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
-
-// Employees
 Route::get('/admin/employees', [EmployeeController::class, 'index'])->name('admin.employees.index');
 Route::get('/admin/employees/create', [EmployeeController::class, 'create'])->name('admin.employees.create');
 Route::post('/admin/employees', [EmployeeController::class, 'store'])->name('admin.employees.store');
@@ -102,6 +99,32 @@ Route::get('/admin/tds/declare/{employeeId}', [TdsController::class, 'declare'])
 Route::post('/admin/tds/declare/{employeeId}', [TdsController::class, 'saveDeclare'])->name('admin.tds.declare.save');
 Route::get('/admin/tds/certificate/{employeeId}', [TdsController::class, 'certificate'])->name('admin.tds.certificate');
 
+// ── Salary Structure ──────────────────────────────────────────────────────
+Route::get('/admin/salary', [SalaryStructureController::class, 'index'])->name('admin.salary.index');
+Route::get('/admin/salary/create', [SalaryStructureController::class, 'create'])->name('admin.salary.create');
+Route::post('/admin/salary', [SalaryStructureController::class, 'store'])->name('admin.salary.store');
+Route::get('/admin/salary/{id}', [SalaryStructureController::class, 'show'])->name('admin.salary.show');
+Route::get('/admin/salary/{id}/edit', [SalaryStructureController::class, 'edit'])->name('admin.salary.edit');
+Route::put('/admin/salary/{id}', [SalaryStructureController::class, 'update'])->name('admin.salary.update');
+Route::delete('/admin/salary/{id}', [SalaryStructureController::class, 'destroy'])->name('admin.salary.destroy');
+// Components
+Route::post('/admin/salary/{structureId}/components', [SalaryStructureController::class, 'storeComponent'])->name('admin.salary.components.store');
+Route::put('/admin/salary/{structureId}/components/{componentId}', [SalaryStructureController::class, 'updateComponent'])->name('admin.salary.components.update');
+Route::delete('/admin/salary/{structureId}/components/{componentId}', [SalaryStructureController::class, 'destroyComponent'])->name('admin.salary.components.destroy');
+// Assignment
+Route::get('/admin/salary-assign', [SalaryStructureController::class, 'assignIndex'])->name('admin.salary.assign');
+Route::post('/admin/salary-assign/preview', [SalaryStructureController::class, 'previewAssignment'])->name('admin.salary.assign.preview');
+Route::post('/admin/salary-assign', [SalaryStructureController::class, 'assign'])->name('admin.salary.assign.save');
+Route::get('/admin/salary-assign/{assignmentId}/breakdown', [SalaryStructureController::class, 'viewBreakdown'])->name('admin.salary.breakdown');
+// Offer Letters
+Route::get('/admin/salary/offers/list', [SalaryStructureController::class, 'offerLetters'])->name('admin.salary.offers');
+Route::get('/admin/salary/offers/create', [SalaryStructureController::class, 'createOffer'])->name('admin.salary.offer.create');
+Route::post('/admin/salary/offers/preview', [SalaryStructureController::class, 'previewOffer'])->name('admin.salary.offer.preview');
+Route::post('/admin/salary/offers', [SalaryStructureController::class, 'storeOffer'])->name('admin.salary.offer.store');
+Route::get('/admin/salary/offers/{id}', [SalaryStructureController::class, 'viewOffer'])->name('admin.salary.offer.view');
+Route::post('/admin/salary/offers/{id}/send', [SalaryStructureController::class, 'sendOffer'])->name('admin.salary.offer.send');
+Route::put('/admin/salary/offers/{id}/status', [SalaryStructureController::class, 'updateOfferStatus'])->name('admin.salary.offer.status');
+
 // Benefits
 Route::get('/admin/benefits', [BenefitsController::class, 'index'])->name('admin.benefits.index');
 Route::get('/admin/benefits/create', [BenefitsController::class, 'create'])->name('admin.benefits.create');
@@ -124,7 +147,7 @@ Route::put('/admin/leaves/{id}/reject', [LeaveController::class, 'reject'])->nam
 Route::get('/admin/leaves/types', [LeaveController::class, 'types'])->name('admin.leaves.types');
 Route::post('/admin/leaves/types', [LeaveController::class, 'storeType'])->name('admin.leaves.types.store');
 
-// ── Learning & Development (Admin) ────────────────────────────────────────
+// Learning
 Route::get('/admin/learning', [LearningController::class, 'index'])->name('admin.learning.index');
 Route::get('/admin/learning/create', [LearningController::class, 'create'])->name('admin.learning.create');
 Route::post('/admin/learning', [LearningController::class, 'store'])->name('admin.learning.store');
@@ -132,11 +155,9 @@ Route::get('/admin/learning/{id}', [LearningController::class, 'show'])->name('a
 Route::get('/admin/learning/{id}/edit', [LearningController::class, 'edit'])->name('admin.learning.edit');
 Route::put('/admin/learning/{id}', [LearningController::class, 'update'])->name('admin.learning.update');
 Route::delete('/admin/learning/{id}', [LearningController::class, 'destroy'])->name('admin.learning.destroy');
-// Schedule Management (Admin)
 Route::post('/admin/learning/{programId}/schedules', [LearningController::class, 'storeSchedule'])->name('admin.learning.schedules.store');
 Route::put('/admin/learning/{programId}/schedules/{scheduleId}', [LearningController::class, 'updateSchedule'])->name('admin.learning.schedules.update');
 Route::delete('/admin/learning/{programId}/schedules/{scheduleId}', [LearningController::class, 'destroySchedule'])->name('admin.learning.schedules.destroy');
-// Enrollment Management (Admin)
 Route::get('/admin/learning/{id}/enrollments', [LearningController::class, 'enrollments'])->name('admin.learning.enrollments');
 Route::put('/admin/learning/enrollments/{enrollmentId}/status', [LearningController::class, 'updateEnrollmentStatus'])->name('admin.learning.enrollments.update');
 
@@ -152,7 +173,7 @@ Route::get('/admin/wellness/surveys/create', [WellnessController::class, 'create
 Route::post('/admin/wellness/surveys', [WellnessController::class, 'storeSurvey'])->name('admin.wellness.surveys.store');
 Route::get('/admin/wellness/surveys/{id}', [WellnessController::class, 'showSurvey'])->name('admin.wellness.surveys.show');
 
-// Employee Self-Service
+// Employee
 Route::get('/employee/dashboard', [EmployeeSelfServiceController::class, 'dashboard'])->name('employee.dashboard');
 Route::get('/employee/profile', [EmployeeSelfServiceController::class, 'profile'])->name('employee.profile');
 Route::put('/employee/profile', [EmployeeSelfServiceController::class, 'updateProfile'])->name('employee.profile.update');
@@ -166,8 +187,6 @@ Route::post('/employee/attendance/checkin', [EmployeeAttendanceController::class
 Route::post('/employee/attendance/checkout', [EmployeeAttendanceController::class, 'checkOut'])->name('employee.attendance.checkout');
 Route::get('/employee/wellness', [EmployeeSelfServiceController::class, 'wellness'])->name('employee.wellness');
 Route::post('/employee/wellness/survey/{id}/respond', [EmployeeSelfServiceController::class, 'submitSurvey'])->name('employee.wellness.survey.respond');
-
-// ── Employee Learning (with Schedule & Reschedule) ────────────────────────
 Route::get('/employee/learning', [EmployeeLearningController::class, 'index'])->name('employee.learning');
 Route::get('/employee/learning/my', [EmployeeLearningController::class, 'myEnrollments'])->name('employee.learning.my');
 Route::get('/employee/learning/{programId}/schedules', [EmployeeLearningController::class, 'showSchedules'])->name('employee.learning.schedules');

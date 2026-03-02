@@ -33,7 +33,6 @@ class PayrollCalculationService
         $holidayDays  = collect($holidayDates)
             ->filter(fn($d) => !Carbon::parse($d)->isWeekend())
             ->count();
-
         $effectiveWorkingDays = $workingDays - $holidayDays;
 
         // Approved Leaves
@@ -59,77 +58,99 @@ class PayrollCalculationService
         }
 
         // Attendance
-        $attendances  = Attendance::where('employee_id', $employee->id)
+        $attendances = Attendance::where('employee_id', $employee->id)
             ->whereBetween('check_in', [$startDate, $endDate->copy()->endOfDay()])
             ->get();
-
         $presentDays = $attendances->where('status', 'present')->count();
         $halfDays    = $attendances->where('status', 'half_day')->count();
         $lateDays    = $attendances->where('is_late', true)->count();
         $absentDays  = max(0, $effectiveWorkingDays - $presentDays - ceil($halfDays / 2) - $leaveDays);
 
-        // Salary
-        $monthlySalary = $employee->salary / 12;
-        $perDaySalary  = $effectiveWorkingDays > 0 ? $monthlySalary / $effectiveWorkingDays : $monthlySalary / 22;
+        // ── Salary from Structure or fallback ─────────────────────────────
+        $structureService = new SalaryStructureService();
+        $assignment = $structureService->getCurrentAssignment($employee->id);
 
+        if ($assignment) {
+            // Use salary structure breakdown
+            $breakdownMap   = $structureService->getBreakdownMap($assignment);
+            $basicMonthly   = (float)($breakdownMap['BASIC'] ?? ($employee->salary / 12 * 0.5));
+            $hraMonthly     = (float)($breakdownMap['HRA'] ?? 0);
+            $allowances     = collect($assignment->breakdowns)
+                ->where('type', 'earning')
+                ->whereNotIn('component_code', ['BASIC'])
+                ->sum('monthly_amount');
+            $statutoryDed   = collect($assignment->breakdowns)->where('type', 'deduction')->sum('monthly_amount');
+            $monthlyGross   = collect($assignment->breakdowns)->where('type', 'earning')->sum('monthly_amount');
+            $monthlySalary  = $monthlyGross;
+            $structureNote  = 'Structure: ' . $assignment->salaryStructure->name;
+        } else {
+            // Fallback to flat salary
+            $monthlySalary = $employee->salary / 12;
+            $basicMonthly  = $monthlySalary * 0.5;
+            $hraMonthly    = $monthlySalary * 0.2;
+            $allowances    = $monthlySalary * 0.3;
+            $statutoryDed  = 0;
+            $structureNote = 'Flat salary (no structure assigned)';
+        }
+
+        $perDaySalary         = $effectiveWorkingDays > 0 ? $monthlySalary / $effectiveWorkingDays : $monthlySalary / 22;
         $absenceDeduction     = $perDaySalary * $absentDays;
         $lateDeduction        = ($perDaySalary * 0.5) * $lateDays;
         $halfDayDeduction     = ($perDaySalary * 0.5) * $halfDays;
         $unpaidLeaveDeduction = $perDaySalary * $unpaidLeaveDays;
 
-        // ── TDS & Statutory via TdsCalculationService ─────────────────────
+        // TDS & Statutory
         $tdsService = new TdsCalculationService();
         $tds = $tdsService->computeMonthlyTds($employee, $month, $year);
 
-        $basicSalary    = $monthlySalary;
         $totalDeductions = $absenceDeduction + $lateDeduction + $halfDayDeduction
-            + $unpaidLeaveDeduction
-            + $tds['monthly_tds']
-            + $tds['professional_tax']
-            + $tds['pf_employee']
-            + $tds['esi_employee'];
+            + $unpaidLeaveDeduction + $tds['monthly_tds']
+            + $tds['professional_tax'] + $tds['pf_employee'] + $tds['esi_employee']
+            + $statutoryDed;
 
-        $grossSalary = $basicSalary;
+        $grossSalary = $monthlySalary;
         $netSalary   = max(0, $grossSalary - $totalDeductions);
 
         return [
-            'pay_period_start'        => $startDate->format('Y-m-d'),
-            'pay_period_end'          => $endDate->format('Y-m-d'),
-            'working_days'            => $workingDays,
-            'holiday_days'            => $holidayDays,
-            'effective_working_days'  => $effectiveWorkingDays,
-            'present_days'            => $presentDays,
-            'absent_days'             => $absentDays,
-            'late_days'               => $lateDays,
-            'half_days'               => $halfDays,
-            'leave_days'              => $leaveDays,
-            'paid_leave_days'         => $paidLeaveDays,
-            'unpaid_leave_days'       => $unpaidLeaveDays,
-            'holidays'                => $holidays,
-            'approved_leaves'         => $approvedLeaves,
-            'basic_salary'            => round($basicSalary, 2),
-            'per_day_salary'          => round($perDaySalary, 2),
-            'allowances'              => 0,
-            'bonus'                   => 0,
-            'overtime_pay'            => 0,
-            'gross_salary'            => round($grossSalary, 2),
-            'absence_deduction'       => round($absenceDeduction, 2),
-            'late_deduction'          => round($lateDeduction, 2),
-            'half_day_deduction'      => round($halfDayDeduction, 2),
-            'unpaid_leave_deduction'  => round($unpaidLeaveDeduction, 2),
-            // TDS & Statutory
-            'tds_amount'              => $tds['monthly_tds'],
-            'professional_tax'        => $tds['professional_tax'],
-            'pf_employee'             => $tds['pf_employee'],
-            'pf_employer'             => $tds['pf_employer'],
-            'esi_employee'            => $tds['esi_employee'],
-            'esi_employer'            => $tds['esi_employer'],
-            'financial_year'          => $tds['financial_year'],
-            'tds_declaration_exists'  => $tds['declaration_exists'],
-            // Totals
-            'tax'                     => $tds['monthly_tds'], // backward compat
-            'deductions'              => round($totalDeductions, 2),
-            'net_salary'              => round($netSalary, 2),
+            'pay_period_start'       => $startDate->format('Y-m-d'),
+            'pay_period_end'         => $endDate->format('Y-m-d'),
+            'working_days'           => $workingDays,
+            'holiday_days'           => $holidayDays,
+            'effective_working_days' => $effectiveWorkingDays,
+            'present_days'           => $presentDays,
+            'absent_days'            => $absentDays,
+            'late_days'              => $lateDays,
+            'half_days'              => $halfDays,
+            'leave_days'             => $leaveDays,
+            'paid_leave_days'        => $paidLeaveDays,
+            'unpaid_leave_days'      => $unpaidLeaveDays,
+            'holidays'               => $holidays,
+            'approved_leaves'        => $approvedLeaves,
+            'basic_salary'           => round($basicMonthly, 2),
+            'hra'                    => round($hraMonthly, 2),
+            'allowances'             => round($allowances, 2),
+            'per_day_salary'         => round($perDaySalary, 2),
+            'gross_salary'           => round($grossSalary, 2),
+            'absence_deduction'      => round($absenceDeduction, 2),
+            'late_deduction'         => round($lateDeduction, 2),
+            'half_day_deduction'     => round($halfDayDeduction, 2),
+            'unpaid_leave_deduction' => round($unpaidLeaveDeduction, 2),
+            'tds_amount'             => $tds['monthly_tds'],
+            'professional_tax'       => $tds['professional_tax'],
+            'pf_employee'            => $tds['pf_employee'],
+            'pf_employer'            => $tds['pf_employer'],
+            'esi_employee'           => $tds['esi_employee'],
+            'esi_employer'           => $tds['esi_employer'],
+            'financial_year'         => $tds['financial_year'],
+            'tds_declaration_exists' => $tds['declaration_exists'],
+            'tax'                    => $tds['monthly_tds'],
+            'deductions'             => round($totalDeductions, 2),
+            'net_salary'             => round($netSalary, 2),
+            'bonus'                  => 0,
+            'overtime_pay'           => 0,
+            'salary_structure'       => $structureNote,
+            'structure_assignment'   => $assignment,
+            'breakdown_map'          => $assignment ? $structureService->getBreakdownMap($assignment) : [],
         ];
     }
 
